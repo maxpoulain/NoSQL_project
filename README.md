@@ -159,6 +159,10 @@ CREATE TABLE gdelt.mentions_by_location_eventcode (
 
 ```
 
+### Schema of the data in Cassandra
+
+![dataincassandra](https://github.com/maxpoulain/NoSQL_project/blob/master/dataincassandra.png)
+
 ### Start spark-shell with cassandra connector and cassandra host
 ```
 spark-shell --packages com.datastax.spark:spark-cassandra-connector_2.11:2.0.1 --conf spark.cassandra.connection.host=ec2-35-170-17-129.compute-1.amazonaws.com
