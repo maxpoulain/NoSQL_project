@@ -1,0 +1,761 @@
+﻿
+{
+  "paragraphs": [{
+    "text": "import org.apache.spark.input.PortableDataStream\nimport java.util.zip.ZipInputStream\nimport java.io.BufferedReader\nimport java.io.InputStreamReader\n\nsc.hadoopConfiguration.set(\"fs.s3a.access.key\", \"*****\") \nsc.hadoopConfiguration.set(\"fs.s3a.secret.key\", \"*****\")\nsc.hadoopConfiguration.setInt(\"fs.s3a.connection.maximum\", 10000)",
+    "user": "anonymous",
+    "dateUpdated": "2018-01-11T21:11:10+0000",
+    "config": {
+      "colWidth": 12,
+      "enabled": true,
+      "results": {},
+      "editorSetting": {
+        "language": "scala",
+        "editOnDblClick": false
+      },
+      "editorMode": "ace/mode/scala"
+    },
+    "settings": {
+      "params": {},
+      "forms": {}
+    },
+    "results": {
+      "code": "SUCCESS",
+      "msg": [{
+        "type": "TEXT",
+        "data": "import org.apache.spark.input.PortableDataStream\nimport java.util.zip.ZipInputStream\nimport java.io.BufferedReader\nimport java.io.InputStreamReader\n"
+      }]
+    },
+    "apps": [],
+    "jobName": "paragraph_1515657053443_-234288267",
+    "id": "20180111-075053_254799504",
+    "dateCreated": "2018-01-11T07:50:53+0000",
+    "dateStarted": "2018-01-11T09:45:51+0000",
+    "dateFinished": "2018-01-11T09:45:52+0000",
+    "status": "FINISHED",
+    "progressUpdateIntervalMs": 500,
+    "focus": true,
+    "$$hashKey": "object:104"
+  }, {
+    "text": "val eventRDD = sc.binaryFiles(\"s3a://telecom.gdelt/20171[0-9]*.export.CSV.zip\")\n   .flatMap {\n       case (name: String, content: PortableDataStream) =>\n          val zis = new ZipInputStream(content.open)\n          Stream.continually(zis.getNextEntry)\n                .takeWhile(_ != null)\n                .flatMap { _ =>\n                    val br = new BufferedReader(new InputStreamReader(zis))\n                    Stream.continually(br.readLine()).takeWhile(_ != null)\n                }\n    }\neventRDD.count()",
+    "user": "anonymous",
+    "dateUpdated": "2018-01-11T21:12:43+0000",
+    "config": {
+      "colWidth": 12,
+      "enabled": true,
+      "results": {},
+      "editorSetting": {
+        "language": "scala",
+        "editOnDblClick": false
+      },
+      "editorMode": "ace/mode/scala"
+    },
+    "settings": {
+      "params": {},
+      "forms": {}
+    },
+    "results": {
+      "code": "SUCCESS",
+      "msg": [{
+        "type": "TEXT",
+        "data": "textRDD: org.apache.spark.rdd.RDD[String] = MapPartitionsRDD[60] at flatMap at <console>:56\nres36: Long = 13187130\n"
+      }]
+    },
+    "apps": [],
+    "jobName": "paragraph_1515657072820_-330460168",
+    "id": "20180111-075112_1303557479",
+    "dateCreated": "2018-01-11T07:51:12+0000",
+    "dateStarted": "2018-01-11T09:45:55+0000",
+    "dateFinished": "2018-01-11T09:54:38+0000",
+    "status": "FINISHED",
+    "progressUpdateIntervalMs": 500,
+    "$$hashKey": "object:105"
+  }, {
+    "text": "val evtest = eventRDD.map(x => x.split(\"\\t\")).map(row => row.mkString(\";\")).map(x => x.split(\";\")).toDF()",
+    "user": "anonymous",
+    "dateUpdated": "2018-01-11T21:12:59+0000",
+    "config": {
+      "colWidth": 12,
+      "enabled": true,
+      "results": {
+        "0": {
+          "graph": {
+            "mode": "table",
+            "height": 93,
+            "optionOpen": false
+          }
+        }
+      },
+      "editorSetting": {
+        "language": "scala",
+        "editOnDblClick": false
+      },
+      "editorMode": "ace/mode/scala"
+    },
+    "settings": {
+      "params": {},
+      "forms": {}
+    },
+    "results": {
+      "code": "SUCCESS",
+      "msg": [{
+        "type": "TEXT",
+        "data": "test: org.apache.spark.sql.DataFrame = [value: array<string>]\n"
+      }]
+    },
+    "apps": [],
+    "jobName": "paragraph_1515657080293_-301973425",
+    "id": "20180111-075120_1910920206",
+    "dateCreated": "2018-01-11T07:51:20+0000",
+    "dateStarted": "2018-01-11T09:55:09+0000",
+    "dateFinished": "2018-01-11T09:55:10+0000",
+    "status": "FINISHED",
+    "progressUpdateIntervalMs": 500,
+    "$$hashKey": "object:106"
+  }, {
+    "text": "val events = evtest.withColumn(\"_tmp\", $\"value\").select($\"_tmp\".getItem(0).as(\"GlobalEventID\"),$\"_tmp\".getItem(1).as(\"Date\"),$\"_tmp\".getItem(27).as(\"EBC\"),$\"_tmp\".getItem(51).as(\"TypeGeo\"),$\"_tmp\".getItem(52).as(\"Geo\"),$\"_tmp\".getItem(58).as(\"ActionGeo\"))",
+    "user": "anonymous",
+    "dateUpdated": "2018-01-11T21:13:16+0000",
+    "config": {
+      "colWidth": 12,
+      "enabled": true,
+      "results": {},
+      "editorSetting": {
+        "language": "scala",
+        "editOnDblClick": false
+      },
+      "editorMode": "ace/mode/scala"
+    },
+    "settings": {
+      "params": {},
+      "forms": {}
+    },
+    "results": {
+      "code": "SUCCESS",
+      "msg": [{
+        "type": "TEXT",
+        "data": "df: org.apache.spark.sql.DataFrame = [GlobalEventID: string, Date: string ... 4 more fields]\n"
+      }]
+    },
+    "apps": [],
+    "jobName": "paragraph_1515657087365_1272049649",
+    "id": "20180111-075127_95931856",
+    "dateCreated": "2018-01-11T07:51:27+0000",
+    "dateStarted": "2018-01-11T09:55:13+0000",
+    "dateFinished": "2018-01-11T09:55:13+0000",
+    "status": "FINISHED",
+    "progressUpdateIntervalMs": 500,
+    "$$hashKey": "object:107"
+  }, {
+    "text": "events.show()",
+    "user": "anonymous",
+    "dateUpdated": "2018-01-11T21:13:19+0000",
+    "config": {
+      "colWidth": 12,
+      "enabled": true,
+      "results": {},
+      "editorSetting": {
+        "language": "scala",
+        "editOnDblClick": false
+      },
+      "editorMode": "ace/mode/scala"
+    },
+    "settings": {
+      "params": {},
+      "forms": {}
+    },
+    "results": {
+      "code": "SUCCESS",
+      "msg": [{
+        "type": "TEXT",
+        "data": "+-------------+--------+---+-------+--------------------+---------+\n|GlobalEventID|    Date|EBC|TypeGeo|                 Geo|ActionGeo|\n+-------------+--------+---+-------+--------------------+---------+\n|    694153003|20161001|043|      4|Torres Strait, , ...| -1605416|\n|    694153004|20161001|036|      4|Lismore, Victoria...| -1583856|\n|    694153005|20161001|042|      1|              Canada|       CA|\n|    694153006|20161001|043|      4|Torres Strait, , ...| -1605416|\n|    694153007|20161001|036|      4|Lismore, Victoria...| -1583856|\n|    694153008|20161001|051|      4|Prince Of Wales C...| -1596104|\n|    694153009|20161001|043|      4|Torres Strait, , ...| -1605416|\n|    694153010|20161001|036|      4|Lismore, Victoria...| -1583856|\n|    694153011|20161001|036|      4|Lismore, Victoria...| -1583856|\n|    694153012|20161001|051|      4|Melbourne, Victor...| -1586844|\n|    694153013|20161001|051|      4|Melbourne, Victor...| -1586844|\n|    694153014|20161001|060|      4|Pictou, Nova Scot...|  -571268|\n|    694153015|20161001|193|      1|           Australia|       AS|\n|    694153016|20161001|042|      4|Melbourne, Victor...| -1586844|\n|    694153017|20161001|042|      4|Melbourne, Victor...| -1586844|\n|    694153018|20161001|051|      4|Prince Of Wales C...| -1596104|\n|    694153019|20161001|013|      2|Florida, United S...|       FL|\n|    694153020|20161001|013|      3|Washington, Distr...|   531871|\n|    694153021|20161001|013|      3|Washington, Distr...|   531871|\n|    694153022|20161001|013|      2|Florida, United S...|       FL|\n+-------------+--------+---+-------+--------------------+---------+\nonly showing top 20 rows\n\n"
+      }]
+    },
+    "apps": [],
+    "jobName": "paragraph_1515657220277_989795554",
+    "id": "20180111-075340_887262286",
+    "dateCreated": "2018-01-11T07:53:40+0000",
+    "dateStarted": "2018-01-11T09:55:17+0000",
+    "dateFinished": "2018-01-11T09:55:18+0000",
+    "status": "FINISHED",
+    "progressUpdateIntervalMs": 500,
+    "$$hashKey": "object:108"
+  }, {
+    "text": "events.count()",
+    "user": "anonymous",
+    "dateUpdated": "2018-01-11T21:13:27+0000",
+    "config": {
+      "colWidth": 12,
+      "enabled": true,
+      "results": {},
+      "editorSetting": {
+        "language": "scala",
+        "editOnDblClick": false
+      },
+      "editorMode": "ace/mode/scala"
+    },
+    "settings": {
+      "params": {},
+      "forms": {}
+    },
+    "results": {
+      "code": "SUCCESS",
+      "msg": [{
+        "type": "TEXT",
+        "data": "res21: Long = 209527\n"
+      }]
+    },
+    "apps": [],
+    "jobName": "paragraph_1515661041368_-1901184732",
+    "id": "20180111-085721_1278702542",
+    "dateCreated": "2018-01-11T08:57:21+0000",
+    "dateStarted": "2018-01-11T09:29:57+0000",
+    "dateFinished": "2018-01-11T09:30:31+0000",
+    "status": "FINISHED",
+    "progressUpdateIntervalMs": 500,
+    "$$hashKey": "object:109"
+  }, {
+    "text": "val mentionsRDD = sc.binaryFiles(\"s3a://telecom.gdelt/20171[0-9]*.mentions.CSV.zip\")\n   .flatMap {\n       case (name: String, content: PortableDataStream) =>\n          val zis = new ZipInputStream(content.open)\n          Stream.continually(zis.getNextEntry)\n                .takeWhile(_ != null)\n                .flatMap { _ =>\n                    val br = new BufferedReader(new InputStreamReader(zis))\n                    Stream.continually(br.readLine()).takeWhile(_ != null)\n                }\n    }\nmentionsRDD.count()",
+    "user": "anonymous",
+    "dateUpdated": "2018-01-11T21:13:38+0000",
+    "config": {
+      "colWidth": 12,
+      "enabled": true,
+      "results": {},
+      "editorSetting": {
+        "language": "scala",
+        "editOnDblClick": false
+      },
+      "editorMode": "ace/mode/scala"
+    },
+    "settings": {
+      "params": {},
+      "forms": {}
+    },
+    "results": {
+      "code": "SUCCESS",
+      "msg": [{
+        "type": "TEXT",
+        "data": "mentionsRDD: org.apache.spark.rdd.RDD[String] = MapPartitionsRDD[68] at flatMap at <console>:56\nres38: Long = 44982100\n"
+      }]
+    },
+    "apps": [],
+    "jobName": "paragraph_1515661051019_-1763029229",
+    "id": "20180111-085731_583975901",
+    "dateCreated": "2018-01-11T08:57:31+0000",
+    "dateStarted": "2018-01-11T10:19:04+0000",
+    "dateFinished": "2018-01-11T10:26:12+0000",
+    "status": "FINISHED",
+    "progressUpdateIntervalMs": 500,
+    "$$hashKey": "object:110"
+  }, {
+    "text": "val mentest = mentionsRDD.map(x => x.split(\"\\t\")).map(row => row.mkString(\";\")).map(x => x.split(\";\")).toDF()",
+    "user": "anonymous",
+    "dateUpdated": "2018-01-11T10:26:42+0000",
+    "config": {
+      "colWidth": 12,
+      "enabled": true,
+      "results": {},
+      "editorSetting": {
+        "language": "scala",
+        "editOnDblClick": false
+      },
+      "editorMode": "ace/mode/scala"
+    },
+    "settings": {
+      "params": {},
+      "forms": {}
+    },
+    "results": {
+      "code": "SUCCESS",
+      "msg": [{
+        "type": "TEXT",
+        "data": "mentest: org.apache.spark.sql.DataFrame = [value: array<string>]\n"
+      }]
+    },
+    "apps": [],
+    "jobName": "paragraph_1515665757468_-1121742065",
+    "id": "20180111-101557_1654113701",
+    "dateCreated": "2018-01-11T10:15:57+0000",
+    "dateStarted": "2018-01-11T10:26:42+0000",
+    "dateFinished": "2018-01-11T10:26:43+0000",
+    "status": "FINISHED",
+    "progressUpdateIntervalMs": 500,
+    "$$hashKey": "object:111"
+  }, {
+    "text": "\n\nval mentions = mentest.withColumn(\"_tmp\", $\"value\").select($\"_tmp\".getItem(0).as(\"GlobalEventID\"),$\"_tmp\".getItem(2).as(\"MentionTimeDate\"),$\"_tmp\".getItem(3).as(\"MentionType\"),$\"_tmp\".getItem(4).as(\"MentionSourceName\"))",
+    "user": "anonymous",
+    "dateUpdated": "2018-01-11T10:31:08+0000",
+    "config": {
+      "colWidth": 12,
+      "enabled": true,
+      "results": {},
+      "editorSetting": {
+        "language": "scala",
+        "editOnDblClick": false
+      },
+      "editorMode": "ace/mode/scala"
+    },
+    "settings": {
+      "params": {},
+      "forms": {}
+    },
+    "results": {
+      "code": "SUCCESS",
+      "msg": [{
+        "type": "TEXT",
+        "data": "mentions: org.apache.spark.sql.DataFrame = [GlobalEventID: string, MentionTimeDate: string ... 2 more fields]\n"
+      }]
+    },
+    "apps": [],
+    "jobName": "paragraph_1515665774019_1187936230",
+    "id": "20180111-101614_1147481422",
+    "dateCreated": "2018-01-11T10:16:14+0000",
+    "dateStarted": "2018-01-11T10:31:08+0000",
+    "dateFinished": "2018-01-11T10:31:08+0000",
+    "status": "FINISHED",
+    "progressUpdateIntervalMs": 500,
+    "$$hashKey": "object:112"
+  }, {
+    "text": "mentions.count()",
+    "user": "anonymous",
+    "dateUpdated": "2018-01-11T10:31:11+0000",
+    "config": {
+      "colWidth": 12,
+      "enabled": true,
+      "results": {},
+      "editorSetting": {
+        "language": "scala",
+        "editOnDblClick": false
+      },
+      "editorMode": "ace/mode/scala"
+    },
+    "settings": {
+      "params": {},
+      "forms": {}
+    },
+    "results": {
+      "code": "SUCCESS",
+      "msg": [{
+        "type": "TEXT",
+        "data": "res46: Long = 44982100\n"
+      }]
+    },
+    "apps": [],
+    "jobName": "paragraph_1515665917959_1845703608",
+    "id": "20180111-101837_1315732888",
+    "dateCreated": "2018-01-11T10:18:37+0000",
+    "dateStarted": "2018-01-11T10:31:11+0000",
+    "dateFinished": "2018-01-11T10:38:08+0000",
+    "status": "FINISHED",
+    "progressUpdateIntervalMs": 500,
+    "$$hashKey": "object:113"
+  }, {
+    "text": "val clean_mentions = mentions.filter($\"MentionType\" === 1)",
+    "user": "anonymous",
+    "dateUpdated": "2018-01-11T12:58:02+0000",
+    "config": {
+      "colWidth": 12,
+      "enabled": true,
+      "results": {},
+      "editorSetting": {
+        "language": "scala",
+        "editOnDblClick": false
+      },
+      "editorMode": "ace/mode/scala"
+    },
+    "settings": {
+      "params": {},
+      "forms": {}
+    },
+    "results": {
+      "code": "SUCCESS",
+      "msg": [{
+        "type": "TEXT",
+        "data": "clean_mentions: org.apache.spark.sql.Dataset[org.apache.spark.sql.Row] = [GlobalEventID: string, MentionTimeDate: string ... 2 more fields]\n"
+      }]
+    },
+    "apps": [],
+    "jobName": "paragraph_1515674316770_-117583321",
+    "id": "20180111-123836_1119703468",
+    "dateCreated": "2018-01-11T12:38:36+0000",
+    "dateStarted": "2018-01-11T12:58:02+0000",
+    "dateFinished": "2018-01-11T12:58:02+0000",
+    "status": "FINISHED",
+    "progressUpdateIntervalMs": 500,
+    "$$hashKey": "object:114"
+  }, {
+    "text": "clean_mentions.show(5)",
+    "user": "anonymous",
+    "dateUpdated": "2018-01-11T12:58:18+0000",
+    "config": {
+      "colWidth": 12,
+      "enabled": true,
+      "results": {},
+      "editorSetting": {
+        "language": "scala",
+        "editOnDblClick": false
+      },
+      "editorMode": "ace/mode/scala"
+    },
+    "settings": {
+      "params": {},
+      "forms": {}
+    },
+    "results": {
+      "code": "SUCCESS",
+      "msg": [{
+        "type": "TEXT",
+        "data": "+-------------+---------------+-----------+-----------------+\n|GlobalEventID|MentionTimeDate|MentionType|MentionSourceName|\n+-------------+---------------+-----------+-----------------+\n|    694153003| 20171001001500|          1|      navy.gov.au|\n|    694153004| 20171001001500|          1|  echonews.com.au|\n|    694153005| 20171001001500|          1|   travelblog.org|\n|    694153006| 20171001001500|          1|      navy.gov.au|\n|    584580295| 20171001001500|          1|         kstp.com|\n+-------------+---------------+-----------+-----------------+\nonly showing top 5 rows\n\n"
+      }]
+    },
+    "apps": [],
+    "jobName": "paragraph_1515675483949_-958434288",
+    "id": "20180111-125803_752622903",
+    "dateCreated": "2018-01-11T12:58:03+0000",
+    "dateStarted": "2018-01-11T12:58:18+0000",
+    "dateFinished": "2018-01-11T12:58:32+0000",
+    "status": "FINISHED",
+    "progressUpdateIntervalMs": 500,
+    "$$hashKey": "object:115"
+  }, {
+    "text": "val domain = spark.read\n     .format(\"csv\")\n     .option(\"header\", \"true\") \n     .load(\"hdfs:///user/hadoop/domainCountry\")",
+    "user": "anonymous",
+    "dateUpdated": "2018-01-11T12:37:55+0000",
+    "config": {
+      "colWidth": 12,
+      "enabled": true,
+      "results": {},
+      "editorSetting": {
+        "language": "scala",
+        "editOnDblClick": false
+      },
+      "editorMode": "ace/mode/scala"
+    },
+    "settings": {
+      "params": {},
+      "forms": {}
+    },
+    "results": {
+      "code": "SUCCESS",
+      "msg": [{
+        "type": "TEXT",
+        "data": "domain: org.apache.spark.sql.DataFrame = [Domain: string, FIPSCountryCode: string ... 1 more field]\n"
+      }]
+    },
+    "apps": [],
+    "jobName": "paragraph_1515666616057_1337233007",
+    "id": "20180111-103016_801270947",
+    "dateCreated": "2018-01-11T10:30:16+0000",
+    "dateStarted": "2018-01-11T12:37:55+0000",
+    "dateFinished": "2018-01-11T12:38:08+0000",
+    "status": "FINISHED",
+    "progressUpdateIntervalMs": 500,
+    "$$hashKey": "object:116"
+  }, {
+    "text": "val clean_domain = domain.withColumnRenamed(\"Domain\", \"MentionSourceName\")",
+    "user": "anonymous",
+    "dateUpdated": "2018-01-11T13:02:05+0000",
+    "config": {
+      "colWidth": 12,
+      "enabled": true,
+      "results": {},
+      "editorSetting": {
+        "language": "scala",
+        "editOnDblClick": false
+      },
+      "editorMode": "ace/mode/scala"
+    },
+    "settings": {
+      "params": {},
+      "forms": {}
+    },
+    "results": {
+      "code": "SUCCESS",
+      "msg": [{
+        "type": "TEXT",
+        "data": "clean_domain: org.apache.spark.sql.DataFrame = [MentionSourceName: string, FIPSCountryCode: string ... 1 more field]\n"
+      }]
+    },
+    "apps": [],
+    "jobName": "paragraph_1515675623598_-1603041937",
+    "id": "20180111-130023_648072522",
+    "dateCreated": "2018-01-11T13:00:23+0000",
+    "dateStarted": "2018-01-11T13:02:05+0000",
+    "dateFinished": "2018-01-11T13:02:05+0000",
+    "status": "FINISHED",
+    "progressUpdateIntervalMs": 500,
+    "$$hashKey": "object:117"
+  }, {
+    "text": "clean_domain.show()",
+    "user": "anonymous",
+    "dateUpdated": "2018-01-11T13:02:08+0000",
+    "config": {
+      "colWidth": 12,
+      "enabled": true,
+      "results": {},
+      "editorSetting": {
+        "language": "scala",
+        "editOnDblClick": false
+      },
+      "editorMode": "ace/mode/scala"
+    },
+    "settings": {
+      "params": {},
+      "forms": {}
+    },
+    "results": {
+      "code": "SUCCESS",
+      "msg": [{
+        "type": "TEXT",
+        "data": "+--------------------+---------------+--------------------+\n|   MentionSourceName|FIPSCountryCode|    CountryHumanName|\n+--------------------+---------------+--------------------+\n|           24ora.com|             AA|               Aruba|\n|      abstvradio.com|             AC| Antigua and Barbuda|\n|    7daysindubai.com|             AE|United Arab Emirates|\n|abudhabicityguide...|             AE|United Arab Emirates|\n|           agoda.com|             AE|United Arab Emirates|\n|       ahlanlive.com|             AE|United Arab Emirates|\n|       alassalah.com|             AE|United Arab Emirates|\n|          albayan.ae|             AE|United Arab Emirates|\n|      aliqtisadi.com|             AE|United Arab Emirates|\n|        alittihad.ae|             AE|United Arab Emirates|\n|        alkhaleej.ae|             AE|United Arab Emirates|\n|          alroeya.ae|             AE|United Arab Emirates|\n|       amakcolor.com|             AE|United Arab Emirates|\n|         ameinfo.com|             AE|United Arab Emirates|\n|  arabiangazette.com|             AE|United Arab Emirates|\n|arabiansupplychai...|             AE|United Arab Emirates|\n|     arabwideweb.com|             AE|United Arab Emirates|\n|      banatzayed.com|             AE|United Arab Emirates|\n|bespokeprofession...|             AE|United Arab Emirates|\n| breakinghotnews.com|             AE|United Arab Emirates|\n+--------------------+---------------+--------------------+\nonly showing top 20 rows\n\n"
+      }]
+    },
+    "apps": [],
+    "jobName": "paragraph_1515673605927_-554865508",
+    "id": "20180111-122645_379379967",
+    "dateCreated": "2018-01-11T12:26:45+0000",
+    "dateStarted": "2018-01-11T13:02:08+0000",
+    "dateFinished": "2018-01-11T13:02:09+0000",
+    "status": "FINISHED",
+    "progressUpdateIntervalMs": 500,
+    "$$hashKey": "object:118"
+  }, {
+    "text": "val df_mentions = clean_mentions.join(clean_domain,\"MentionSourceName\")",
+    "user": "anonymous",
+    "dateUpdated": "2018-01-11T13:04:45+0000",
+    "config": {
+      "colWidth": 12,
+      "enabled": true,
+      "results": {},
+      "editorSetting": {
+        "language": "scala",
+        "editOnDblClick": false
+      },
+      "editorMode": "ace/mode/scala"
+    },
+    "settings": {
+      "params": {},
+      "forms": {}
+    },
+    "results": {
+      "code": "SUCCESS",
+      "msg": [{
+        "type": "TEXT",
+        "data": "df_mentions: org.apache.spark.sql.DataFrame = [MentionSourceName: string, GlobalEventID: string ... 4 more fields]\n"
+      }]
+    },
+    "apps": [],
+    "jobName": "paragraph_1515674298790_-1789732689",
+    "id": "20180111-123818_823513225",
+    "dateCreated": "2018-01-11T12:38:18+0000",
+    "dateStarted": "2018-01-11T13:04:45+0000",
+    "dateFinished": "2018-01-11T13:04:46+0000",
+    "status": "FINISHED",
+    "progressUpdateIntervalMs": 500,
+    "$$hashKey": "object:119"
+  }, {
+    "text": "df_mentions.show(5)",
+    "user": "anonymous",
+    "dateUpdated": "2018-01-11T13:04:49+0000",
+    "config": {
+      "colWidth": 12,
+      "enabled": true,
+      "results": {},
+      "editorSetting": {
+        "language": "scala",
+        "editOnDblClick": false
+      },
+      "editorMode": "ace/mode/scala"
+    },
+    "settings": {
+      "params": {},
+      "forms": {}
+    },
+    "results": {
+      "code": "SUCCESS",
+      "msg": [{
+        "type": "TEXT",
+        "data": "+-----------------+-------------+---------------+-----------+---------------+----------------+\n|MentionSourceName|GlobalEventID|MentionTimeDate|MentionType|FIPSCountryCode|CountryHumanName|\n+-----------------+-------------+---------------+-----------+---------------+----------------+\n|      navy.gov.au|    694153003| 20171001001500|          1|             AS|       Australia|\n|  echonews.com.au|    694153004| 20171001001500|          1|             AS|       Australia|\n|   travelblog.org|    694153005| 20171001001500|          1|             IC|         Iceland|\n|      navy.gov.au|    694153006| 20171001001500|          1|             AS|       Australia|\n|         kstp.com|    584580295| 20171001001500|          1|             US|   United States|\n+-----------------+-------------+---------------+-----------+---------------+----------------+\nonly showing top 5 rows\n\n"
+      }]
+    },
+    "apps": [],
+    "jobName": "paragraph_1515675830833_-2005986762",
+    "id": "20180111-130350_1969293986",
+    "dateCreated": "2018-01-11T13:03:50+0000",
+    "dateStarted": "2018-01-11T13:04:49+0000",
+    "dateFinished": "2018-01-11T13:04:51+0000",
+    "status": "FINISHED",
+    "progressUpdateIntervalMs": 500,
+    "$$hashKey": "object:120"
+  }, {
+    "text": "df_mentions.groupBy($\"FIPSCountryCode\").agg(count(lit(1))).alias(\"cnt\").show(1000)",
+    "user": "anonymous",
+    "dateUpdated": "2018-01-11T13:18:27+0000",
+    "config": {
+      "colWidth": 12,
+      "enabled": true,
+      "results": {},
+      "editorSetting": {
+        "language": "scala",
+        "editOnDblClick": false
+      },
+      "editorMode": "ace/mode/scala"
+    },
+    "settings": {
+      "params": {},
+      "forms": {}
+    },
+    "results": {
+      "code": "SUCCESS",
+      "msg": [{
+        "type": "TEXT",
+        "data": "+---------------+--------+\n|FIPSCountryCode|count(1)|\n+---------------+--------+\n|             LT|    1415|\n|             CI|     299|\n|             IC|    2052|\n|             PM|    7041|\n|             FI|    2569|\n|             RO|   20207|\n|             SL|   13151|\n|             NL|    9300|\n|             LA|      62|\n|             AM|   64555|\n|             PL|    9288|\n|             UV|       3|\n|             MK|    4921|\n|             DR|    1310|\n|             MX|    8640|\n|             BP|     954|\n|             TI|    2227|\n|             SW|    5526|\n|             AV|     511|\n|             BU|   35698|\n|             CG|      11|\n|             LI|    7174|\n|             HR|      93|\n|             NP|   78744|\n|             BX|   13660|\n|             TU|  131431|\n|             SO|   27467|\n|             VQ|      36|\n|             GG|    3721|\n|             RI|   14148|\n|             GH|  154088|\n|             BC|    5065|\n|             HK|     879|\n|             BN|     131|\n|             MI|   14434|\n|             TW|   27725|\n|             GV|       2|\n|             SU|   11701|\n|             BD|    5263|\n|             TO|      18|\n|             ID|   40760|\n|             LY|     184|\n|             IV|      20|\n|             PK|  372688|\n|             SA|  157924|\n|             AU|   72051|\n|             CA| 1242500|\n|             BM|    9721|\n|             UZ|    5614|\n|             MT|   28526|\n|             GB|     167|\n|             BR|    3618|\n|             KZ|    7842|\n|             EN|    1708|\n|             MD|    1346|\n|             GT|      20|\n|             RB|    6250|\n|             SP|   27340|\n|             GJ|    2340|\n|             IR|   84802|\n|             BH|   13278|\n|             MO|    2934|\n|             EC|     852|\n|             VI|     802|\n|             PO|    2335|\n|             VE|    3272|\n|             OD|    5196|\n|             MB|      81|\n|             ZA|   11932|\n|             SF|  306670|\n|             TZ|    6192|\n|             WA|    4179|\n|             US|24176169|\n|             RS|  259333|\n|             LH|    3913|\n|             TS|     608|\n|             AL|    5958|\n|             MY|  327157|\n|             IN| 1946607|\n|             JM|   26589|\n|             GM|   37707|\n|             BK|     249|\n|             AE|  160415|\n|             KV|     766|\n|             CM|   20800|\n|             RW|    8409|\n|             MJ|     165|\n|             FR|   89897|\n|             AJ|   78895|\n|             DA|    1986|\n|             CH|  443166|\n|             TN|     245|\n|             GQ|    2688|\n|             NU|      52|\n|             ZI|   84213|\n|             UP|   26601|\n|             GR|   25536|\n|             TD|   15398|\n|             GI|    2203|\n|             PA|       1|\n|             RP|  608513|\n|             AG|     777|\n|             DJ|     322|\n|             MC|     167|\n|             HA|    3098|\n|             JO|   25706|\n|             BA|   10126|\n|             ET|    4270|\n|             SG|     191|\n|             EI|  206981|\n|             BF|    7775|\n|             IT|   36024|\n|             CU|   19054|\n|             VM|   67879|\n|             SE|    2506|\n|             FJ|   27549|\n|             BG|  167084|\n|             WS|   10440|\n|             KU|   17818|\n|             UK| 2689184|\n|             CJ|    3444|\n|             MH|     705|\n|             LO|    1786|\n|             CW|    1272|\n|             FM|      36|\n|             MU|   20394|\n|             PE|     315|\n|             OS|     161|\n|             MZ|      95|\n|             LG|   12653|\n|             QA|   86724|\n|             LE|   17588|\n|             DO|     361|\n|             TH|   47363|\n|             EG|   87102|\n|             CS|    9308|\n|             GY|   14865|\n|             CE|   57814|\n|             VC|    1629|\n|             SN|   26778|\n|             TX|     859|\n|             NZ|  178912|\n|             CB|   10465|\n|             BT|    2547|\n|             YM|   12602|\n|             HU|    6070|\n|             KN|     619|\n|             KE|   83405|\n|             CY|    7346|\n|             SI|    1090|\n|             ML|      13|\n|             EZ|   12122|\n|             UG|   43635|\n|             GA|    6342|\n|             AS| 1487254|\n|             WZ|    1217|\n|             BE|    1252|\n|             AC|     153|\n|             KS|   93635|\n|             NI|  748962|\n|             KG|    8986|\n|             SY|   60291|\n|             NO|    3678|\n|             BO|   18109|\n|             ER|    1189|\n|             CO|    1639|\n|             IZ|   66191|\n|             JE|    9875|\n|             AR|    3838|\n|             CF|      34|\n|             SZ|   54409|\n|             LU|    2851|\n|             IS|  935278|\n|             MP|    1325|\n|             JA|   99865|\n|             AF|   27517|\n|             BB|    9924|\n|             PP|    2503|\n|             CD|     705|\n|             AO|     534|\n|             ST|    1517|\n+---------------+--------+\n\n"
+      }]
+    },
+    "apps": [],
+    "jobName": "paragraph_1515675842892_985836009",
+    "id": "20180111-130402_158764749",
+    "dateCreated": "2018-01-11T13:04:02+0000",
+    "dateStarted": "2018-01-11T13:18:27+0000",
+    "dateFinished": "2018-01-11T13:27:38+0000",
+    "status": "FINISHED",
+    "progressUpdateIntervalMs": 500,
+    "$$hashKey": "object:121"
+  }, {
+    "text": "val df_final = df_mentions.join(events,\"GlobalEventID\")",
+    "user": "anonymous",
+    "dateUpdated": "2018-01-11T13:31:14+0000",
+    "config": {
+      "colWidth": 12,
+      "enabled": true,
+      "results": {},
+      "editorSetting": {
+        "language": "scala",
+        "editOnDblClick": false
+      },
+      "editorMode": "ace/mode/scala"
+    },
+    "settings": {
+      "params": {},
+      "forms": {}
+    },
+    "results": {
+      "code": "SUCCESS",
+      "msg": [{
+        "type": "TEXT",
+        "data": "df_final: org.apache.spark.sql.DataFrame = [GlobalEventID: string, MentionSourceName: string ... 9 more fields]\n"
+      }]
+    },
+    "apps": [],
+    "jobName": "paragraph_1515676049717_-1700959150",
+    "id": "20180111-130729_268312350",
+    "dateCreated": "2018-01-11T13:07:29+0000",
+    "dateStarted": "2018-01-11T13:31:14+0000",
+    "dateFinished": "2018-01-11T13:31:15+0000",
+    "status": "FINISHED",
+    "progressUpdateIntervalMs": 500,
+    "$$hashKey": "object:122"
+  }, {
+    "text": "df_final.show()",
+    "user": "anonymous",
+    "dateUpdated": "2018-01-11T13:31:28+0000",
+    "config": {
+      "colWidth": 12,
+      "enabled": true,
+      "results": {},
+      "editorSetting": {
+        "language": "scala",
+        "editOnDblClick": false
+      },
+      "editorMode": "ace/mode/scala"
+    },
+    "settings": {
+      "params": {},
+      "forms": {}
+    },
+    "results": {
+      "code": "SUCCESS",
+      "msg": [{
+        "type": "TEXT",
+        "data": "+-------------+--------------------+---------------+-----------+---------------+--------------------+--------+---+-------+--------------------+---------+\n|GlobalEventID|   MentionSourceName|MentionTimeDate|MentionType|FIPSCountryCode|    CountryHumanName|    Date|EBC|TypeGeo|                 Geo|ActionGeo|\n+-------------+--------------------+---------------+-----------+---------------+--------------------+--------+---+-------+--------------------+---------+\n|    694153236|             adn.com| 20171001001500|          1|             US|       United States|20171001|046|      4|Beijing, Beijing,...| -1898541|\n|    694153236|      japantoday.com| 20171001001500|          1|             JA|               Japan|20171001|046|      4|Beijing, Beijing,...| -1898541|\n|    694153236|freemalaysiatoday...| 20171001004500|          1|             MY|            Malaysia|20171001|046|      4|Beijing, Beijing,...| -1898541|\n|    694153236|        arabnews.com| 20171001011500|          1|             SA|        Saudi Arabia|20171001|046|      4|Beijing, Beijing,...| -1898541|\n|    694153236|      thenational.ae| 20171001014500|          1|             AE|United Arab Emirates|20171001|046|      4|Beijing, Beijing,...| -1898541|\n|    694153236|           trust.org| 20171001030000|          1|             US|       United States|20171001|046|      4|Beijing, Beijing,...| -1898541|\n|    694153236|       nation.com.pk| 20171001031500|          1|             PK|            Pakistan|20171001|046|      4|Beijing, Beijing,...| -1898541|\n|    694153236|              geo.tv| 20171001040000|          1|             PK|            Pakistan|20171001|046|      4|Beijing, Beijing,...| -1898541|\n|    694153236| channelnewsasia.com| 20171001041500|          1|             US|       United States|20171001|046|      4|Beijing, Beijing,...| -1898541|\n|    694153236|  manoramaonline.com| 20171001060000|          1|             IN|               India|20171001|046|      4|Beijing, Beijing,...| -1898541|\n|    694153236|         reuters.com| 20171001061500|          1|             US|       United States|20171001|046|      4|Beijing, Beijing,...| -1898541|\n|    694153236|         reuters.com| 20171001063000|          1|             US|       United States|20171001|046|      4|Beijing, Beijing,...| -1898541|\n|    694153236|         reuters.com| 20171001063000|          1|             US|       United States|20171001|046|      4|Beijing, Beijing,...| -1898541|\n|    694153236|       nation.com.pk| 20171001070000|          1|             PK|            Pakistan|20171001|046|      4|Beijing, Beijing,...| -1898541|\n|    694153236|     prothom-alo.com| 20171001081500|          1|             BG|          Bangladesh|20171001|046|      4|Beijing, Beijing,...| -1898541|\n|    694153236| freepressjournal.in| 20171001084500|          1|             IN|               India|20171001|046|      4|Beijing, Beijing,...| -1898541|\n|    694153236|    stabroeknews.com| 20171001084500|          1|             GY|              Guyana|20171001|046|      4|Beijing, Beijing,...| -1898541|\n|    694153236|            ndtv.com| 20171001093000|          1|             IN|               India|20171001|046|      4|Beijing, Beijing,...| -1898541|\n|    694153236|egyptindependent.com| 20171001113000|          1|             EG|               Egypt|20171001|046|      4|Beijing, Beijing,...| -1898541|\n|    694153236|        bdnews24.com| 20171001124500|          1|             BG|          Bangladesh|20171001|046|      4|Beijing, Beijing,...| -1898541|\n+-------------+--------------------+---------------+-----------+---------------+--------------------+--------+---+-------+--------------------+---------+\nonly showing top 20 rows\n\n"
+      }]
+    },
+    "apps": [],
+    "jobName": "paragraph_1515677474644_-284287461",
+    "id": "20180111-133114_1767328031",
+    "dateCreated": "2018-01-11T13:31:14+0000",
+    "dateStarted": "2018-01-11T13:31:29+0000",
+    "dateFinished": "2018-01-11T13:46:40+0000",
+    "status": "FINISHED",
+    "progressUpdateIntervalMs": 500,
+    "$$hashKey": "object:123"
+  }, {
+    "text": "//df_final.write.parquet(\"s3a://gdelt.project-fpss-backup/\")",
+    "user": "anonymous",
+    "dateUpdated": "2018-01-11T21:13:48+0000",
+    "config": {
+      "colWidth": 12,
+      "enabled": true,
+      "results": {},
+      "editorSetting": {
+        "language": "scala",
+        "editOnDblClick": false
+      },
+      "editorMode": "ace/mode/scala"
+    },
+    "settings": {
+      "params": {},
+      "forms": {}
+    },
+    "results": {
+      "code": "SUCCESS",
+      "msg": []
+    },
+    "apps": [],
+    "jobName": "paragraph_1515677488955_115313405",
+    "id": "20180111-133128_633201542",
+    "dateCreated": "2018-01-11T13:31:28+0000",
+    "dateStarted": "2018-01-11T14:17:59+0000",
+    "dateFinished": "2018-01-11T14:40:38+0000",
+    "status": "FINISHED",
+    "progressUpdateIntervalMs": 500,
+    "$$hashKey": "object:124"
+  }, {
+    "user": "anonymous",
+    "config": {
+      "colWidth": 12,
+      "enabled": true,
+      "results": {},
+      "editorSetting": {
+        "language": "scala",
+        "editOnDblClick": false
+      },
+      "editorMode": "ace/mode/scala"
+    },
+    "settings": {
+      "params": {},
+      "forms": {}
+    },
+    "apps": [],
+    "jobName": "paragraph_1515679897496_1241705466",
+    "id": "20180111-141137_1056513571",
+    "dateCreated": "2018-01-11T14:11:37+0000",
+    "status": "READY",
+    "progressUpdateIntervalMs": 500,
+    "$$hashKey": "object:125"
+  }],
+  "name": "Test",
+  "id": "2D2WXPB59",
+  "angularObjects": {
+    "2BRWU4WXC:shared_process": [],
+    "2AM1YV5CU:shared_process": [],
+    "2AJXGMUUJ:shared_process": [],
+    "2ANGGHHMQ:shared_process": [],
+    "2AKK3QQXU:shared_process": []
+  },
+  "config": {
+    "looknfeel": "default",
+    "personalizedMode": "false"
+  },
+  "info": {}
+}
