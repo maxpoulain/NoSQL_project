@@ -218,5 +218,5 @@ dfRenamed.write.format("org.apache.spark.sql.cassandra").mode("overwrite").optio
 ### Test Cassandra
 - Connect to one of the nodes (ssh)
 - ``` cqlsh ip of the node ```
-- ``` USE gdelt ```
+- ``` USE gdelt; ```
 - ``` SELECT * FROM mentions_by_location_eventcode; ```
