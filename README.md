@@ -1,5 +1,10 @@
 # NoSQL_project
 
+## Architecture
+
+![architecture](https://github.com/maxpoulain/NoSQL_project/blob/master/architecture.png)
+
+
 ## Preprocess data
 
 
