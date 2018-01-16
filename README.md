@@ -228,4 +228,4 @@ dfRenamed.write.format("org.apache.spark.sql.cassandra").mode("overwrite").optio
 - Connect to one of the nodes (ssh)
 - ``` cqlsh ip of the node ```
 - ``` USE gdelt; ```
-- ``` SELECT * FROM mentions_by_location_eventcode; ```
+- ``` SELECT * FROM mentions_by_location_eventcode LIMIT 10; ```
