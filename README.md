@@ -7,7 +7,7 @@
 
 ## Preprocess data
 
-![Zeppelin Notebook](https://github.com/maxpoulain/NoSQL_project/blob/master/Projet_NoSQL_preprocess1.json)
+[Zeppelin Notebook](https://github.com/maxpoulain/NoSQL_project/blob/master/Projet_NoSQL_preprocess1.json)
 
 ### Import packages
 ```
